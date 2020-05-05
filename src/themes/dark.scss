@@ -1,0 +1,9 @@
+@import "~vue-material/dist/theme/engine";
+
+@include md-register-theme("dark", (
+        primary: md-get-palette-color(pink, 100),
+        accent: md-get-palette-color(cyan, 100),
+        theme: light
+));
+
+@import "~vue-material/dist/theme/all";

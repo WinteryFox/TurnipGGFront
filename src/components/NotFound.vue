@@ -1,5 +1,5 @@
 <template>
-    <h1>
+    <h1 class="md-alignment-center">
         404: Not Found
     </h1>
 </template>

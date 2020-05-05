@@ -3,10 +3,15 @@ import VueRouter from "vue-router";
 import App from './App.vue'
 import Home from './components/Home.vue';
 import NotFound from "@/components/NotFound";
+import VueMaterial from 'vue-material';
+import 'vue-material/dist/vue-material.min.css';
+import './themes/dark.scss';
 
 Vue.config.productionTip = false
 
 Vue.use(VueRouter);
+Vue.use(VueMaterial);
+Vue.material.theming.theme = "dark";
 
 const router = new VueRouter({
     mode: 'history',
