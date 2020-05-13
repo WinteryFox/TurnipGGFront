@@ -65,7 +65,7 @@
         </div>
 
         <div>
-            <md-snackbar :md-duration="Infinity" :md-active="showSnackbar">
+            <md-snackbar :md-duration="Infinity" :md-active="!connected">
                 <span>Lost connection, attempting to reconnect...</span>
             </md-snackbar>
         </div>
@@ -73,8 +73,6 @@
 </template>
 
 <script>
-    import SockJS from "sockjs-client";
-    import Stomp from "webstomp-client";
     import Island from "@/components/Island";
 
     export default {
@@ -82,8 +80,9 @@
         components: {Island},
         data: () => ({
             islands: [],
-            showSnackbar: true,
+            connected: false,
             showForm: false,
+            timeout: 2000,
             createForm: {
                 code: "",
                 hemisphere: 0,
@@ -96,40 +95,22 @@
 
         methods: {
             connect() {
-                this.socket = new SockJS("http://localhost:8080/socket");
-                this.stompClient = Stomp.over(this.socket);
-                this.stompClient.connect(
-                    {},
-                    () => {
-                        this.stompClient.subscribe(
-                            "/islands/create",
-                            data => {
-                                this.islands.push(JSON.parse(data.body));
-                            }
-                        );
+                this.socket = new WebSocket("ws://localhost:8080/socket");
 
-                        this.stompClient.subscribe(
-                            "/islands/delete",
-                            data => {
-                                this.islands.delete(JSON.parse(data.body));
-                            }
-                        );
+                this.socket.onopen = () => {
+                    this.connected = true;
+                    alert("connected");
+                }
 
-                        this.showSnackbar = false;
-                    },
-                    () => {
-                        this.showSnackbar = true;
-                        setTimeout(this.connect, 5000);
-                    }
-                )
+                this.socket.onclose = (event) => {
+                    console.log(event);
+                    this.connected = false;
+
+                    setTimeout(this.connect, this.timeout);
+                }
             },
 
             create() {
-                this.stompClient.send(
-                    "/create",
-                    JSON.stringify(this.createForm),
-                    {}
-                );
                 this.showForm = false;
             }
         },
